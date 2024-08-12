@@ -16,6 +16,7 @@ app.use(express.json());
 app.use('/api/auth', authenticationRoutes);
 app.use('/api/pokemons', pokemonRoutes); // Ajout des routes Pokémon
 app.use('/api/teams', teamRoutes); // Ajout des routes d'équipe
+app.use('/api/skills', skillRoutes); // Ajout des routes d'équipe
 
 
 

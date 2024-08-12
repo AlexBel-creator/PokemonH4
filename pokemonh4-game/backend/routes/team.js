@@ -67,6 +67,41 @@ router.post('/add', async (req, res) => {
 
 
 
+// router.get('/team', async (req, res) => {
+//     const uuid = req.query.uuid;
+
+//     if (!uuid) {
+//         return res.status(400).json({ error: 'UUID de l\'utilisateur manquant' });
+//     }
+
+//     try {
+//         // Trouver l'utilisateur avec l'UUID
+//         const user = await prisma.user.findUnique({
+//             where: { uuid: uuid }
+//         });
+
+//         if (!user) {
+//             return res.status(404).json({ error: 'Utilisateur non trouvé' });
+//         }
+
+//         // Trouver l'équipe associée à l'utilisateur
+//         const team = await prisma.team.findFirst({
+//             where: { userId: user.uuid },
+//             include: { pokemons: { include: { pokemon: true } } } // Inclure les détails des Pokémon
+//         });
+
+//         if (!team) {
+//             return res.status(404).json({ error: 'Équipe non trouvée' });
+//         }
+
+//         // Répondre avec les détails des Pokémon de l'équipe
+//         res.json({ pokemons: team.pokemons.map(tp => tp.pokemon) });
+//     } catch (error) {
+//         console.error('Erreur lors de la récupération de l\'équipe:', error);
+//         res.status(500).json({ error: 'Erreur interne du serveur' });
+//     }
+// });
+
 router.get('/team', async (req, res) => {
     const uuid = req.query.uuid;
 
@@ -75,7 +110,6 @@ router.get('/team', async (req, res) => {
     }
 
     try {
-        // Trouver l'utilisateur avec l'UUID
         const user = await prisma.user.findUnique({
             where: { uuid: uuid }
         });
@@ -84,24 +118,31 @@ router.get('/team', async (req, res) => {
             return res.status(404).json({ error: 'Utilisateur non trouvé' });
         }
 
-        // Trouver l'équipe associée à l'utilisateur
         const team = await prisma.team.findFirst({
             where: { userId: user.uuid },
-            include: { pokemons: { include: { pokemon: true } } } // Inclure les détails des Pokémon
+            include: {
+                pokemons: {
+                    include: {
+                        pokemon: {
+                            include: {
+                                skills: true // Inclure les compétences des Pokémon
+                            }
+                        }
+                    }
+                }
+            }
         });
 
         if (!team) {
             return res.status(404).json({ error: 'Équipe non trouvée' });
         }
 
-        // Répondre avec les détails des Pokémon de l'équipe
         res.json({ pokemons: team.pokemons.map(tp => tp.pokemon) });
     } catch (error) {
         console.error('Erreur lors de la récupération de l\'équipe:', error);
         res.status(500).json({ error: 'Erreur interne du serveur' });
     }
 });
-
 
 router.delete('/remove', async (req, res) => {
     const userUuid = req.headers['x-user-uuid'];

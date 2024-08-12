@@ -9,6 +9,7 @@ router.get('/', async (req, res) => {
         const skills = await prisma.skill.findMany();
         res.json(skills);
     } catch (error) {
+        console.error('Error fetching skills:', error);
         res.status(500).json({ error: 'Failed to fetch skills' });
     }
 });
@@ -20,8 +21,14 @@ router.get('/:id', async (req, res) => {
         const skill = await prisma.skill.findUnique({
             where: { id: parseInt(id) },
         });
+
+        if (!skill) {
+            return res.status(404).json({ error: 'Skill not found' });
+        }
+
         res.json(skill);
     } catch (error) {
+        console.error('Error fetching skill:', error);
         res.status(500).json({ error: 'Failed to fetch skill' });
     }
 });
@@ -40,6 +47,7 @@ router.post('/add', async (req, res) => {
         });
         res.status(201).json(skill);
     } catch (error) {
+        console.error('Error adding skill:', error);
         res.status(500).json({ error: 'Failed to add skill' });
     }
 });

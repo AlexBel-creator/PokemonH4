@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import AvailablePokemons from './AvailablePokemons';
 import PlayerTeam from './PlayerTeam';
-
+import Navbar from './Navbar'; // Import the Navbar component
 const TeamManagement = () => {
   const [teamPokemons, setTeamPokemons] = useState([]);
   const [error, setError] = useState(''); // État pour gérer les messages d'erreur
@@ -62,24 +62,27 @@ const TeamManagement = () => {
   };
 
   return (
-    <div className="team-management container mx-auto p-4">
-      <h1 className="text-4xl font-bold text-center mb-8">
-        Composez Votre Équipe
-      </h1>
-      <div className="flex">
-        <div className="w-2/3">
-          <AvailablePokemons onAddToTeam={handleAddToTeam} />
+    <>
+      <Navbar />
+      <div className="team-management container mx-auto p-4">
+        <h1 className="text-4xl font-bold text-center mb-8">
+          Composez Votre Équipe
+        </h1>
+        <div className="flex">
+          <div className="w-2/3">
+            <AvailablePokemons onAddToTeam={handleAddToTeam} />
+          </div>
+          <div className="w-1/3 ml-8">
+            <PlayerTeam pokemons={teamPokemons} updateTrigger={updateTrigger} />
+          </div>
         </div>
-        <div className="w-1/3 ml-8">
-          <PlayerTeam pokemons={teamPokemons} updateTrigger={updateTrigger} />
-        </div>
+        {error && (
+          <div className="error-message text-red-500 text-center mt-4">
+            {error}
+          </div>
+        )}
       </div>
-      {error && (
-        <div className="error-message text-red-500 text-center mt-4">
-          {error}
-        </div>
-      )}
-    </div>
+    </>
   );
 };
 
