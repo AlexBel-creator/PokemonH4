@@ -1,26 +1,18 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
+import { Routes, Route } from 'react-router-dom';
+import RegisterForm from './components/RegisterForm';
 import LoginForm from './components/LoginForm';
-import UserInfo from './components/UserInfo';
+import TestComponent from './components/TestComponent';
+import TeamManagement from './components/TeamManagement'; // Importation du composant
 
 function App() {
-  const [userInfo, setUserInfo] = useState(null);
-
-  useEffect(() => {
-    const token = localStorage.getItem('token');
-    if (token) {
-      const decoded = jwtDecode(token);
-      setUserInfo({ token, uuid: decoded.uuid });
-    }
-  }, []);
-
   return (
-    <div>
-      {!userInfo ? (
-        <LoginForm setUserInfo={setUserInfo} />
-      ) : (
-        <UserInfo userInfo={userInfo} setUserInfo={setUserInfo} />
-      )}
-    </div>
+    <Routes>
+      <Route path="/" element={<RegisterForm />} />
+      <Route path="/login" element={<LoginForm />} />
+      <Route path="/test" element={<TestComponent />} />
+      <Route path="/team-management" element={<TeamManagement />} /> {/* Nouvelle route pour la gestion d'équipe */}
+    </Routes>
   );
 }
 

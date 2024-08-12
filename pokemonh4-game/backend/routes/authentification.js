@@ -1,11 +1,8 @@
 const express = require('express');
 const { PrismaClient } = require('@prisma/client');
 const bcrypt = require('bcrypt');
-const jwt = require('jsonwebtoken');
 const router = express.Router();
 const prisma = new PrismaClient();
-
-const JWT_SECRET = 'your_secret_key'; // Change this to a strong secret key
 
 // Route pour l'inscription
 router.post('/register', async (req, res) => {
@@ -26,12 +23,20 @@ router.post('/register', async (req, res) => {
 router.post('/login', async (req, res) => {
     const { email, password } = req.body;
 
-    const user = await prisma.user.findUnique({ where: { email } });
-    if (user && await bcrypt.compare(password, user.password)) {
-        const token = jwt.sign({ uuid: user.uuid }, JWT_SECRET, { expiresIn: '1h' });
-        res.json({ token });
-    } else {
-        res.status(401).json({ error: 'Invalid credentials' });
+    try {
+        const user = await prisma.user.findUnique({ where: { email } });
+        if (user && await bcrypt.compare(password, user.password)) {
+            const responseData = {
+                uuid: user.uuid,
+                username: user.username
+            };
+            res.json(responseData);
+        } else {
+            res.status(401).json({ error: 'Invalid credentials' });
+        }
+    } catch (error) {
+        console.error("Erreur lors de la connexion:", error);
+        res.status(500).json({ error: 'Server error' });
     }
 });
 

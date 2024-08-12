@@ -1,3 +1,5 @@
+// schema.prisma
+
 generator client {
   provider = "prisma-client-js"
 }
@@ -9,10 +11,62 @@ datasource db {
 
 model User {
   id       Int      @id @default(autoincrement())
-  uuid     String   @unique @default(uuid())
+  uuid     String   @unique @default(uuid()) // UUID comme identifiant unique
   username String   @unique
   email    String   @unique
   password String
-  pokemons Pokemon[]
+  pokemons UserPokemon[]
+  teams    Team[]
 }
 
+model Pokemon {
+  id          Int       @id @default(autoincrement())
+  name        String
+  typeA       String
+  typeB       String?
+  hp          Int
+  attack      Int
+  defense     Int
+  frontSprite String?
+  backSprite  String?
+  skills      Skill[]
+  users       UserPokemon[]
+  teams       TeamPokemon[]
+}
+
+model Skill {
+  id          Int      @id @default(autoincrement())
+  name        String
+  power       Int
+  accuracy    Int
+  pokemonId   Int
+  pokemon     Pokemon  @relation(fields: [pokemonId], references: [id])
+}
+
+model Team {
+  id          Int       @id @default(autoincrement())
+  name        String
+  userId      String    // UUID utilisé pour identifier l'utilisateur
+  user        User      @relation(fields: [userId], references: [uuid])
+  pokemons    TeamPokemon[]
+}
+
+model UserPokemon {
+  id        Int      @id @default(autoincrement())
+  userId    String   // UUID utilisé pour identifier l'utilisateur
+  pokemonId Int
+  user      User     @relation(fields: [userId], references: [uuid])
+  pokemon   Pokemon  @relation(fields: [pokemonId], references: [id])
+
+  @@unique([userId, pokemonId])
+}
+
+model TeamPokemon {
+  id        Int      @id @default(autoincrement())
+  teamId    Int
+  pokemonId Int
+  team      Team     @relation(fields: [teamId], references: [id])
+  pokemon   Pokemon  @relation(fields: [pokemonId], references: [id])
+
+  @@unique([teamId, pokemonId])
+}
