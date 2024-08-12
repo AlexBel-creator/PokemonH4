@@ -22,11 +22,17 @@ Installation
 `git clone https://github.com/AlexBel-creator/PokemonH4`
 
 `cd pokemonh4-game` 2. Installation des dépendances
-Installez toutes les dépendances nécessaires avec npm :
+
+2. Installation des dépendances
+   Installez toutes les dépendances nécessaires avec npm :
 
 `npm install`
 
-3. Initialisation de la Base de Données
+3. Configuration de la Base de Données
+   Configurez votre base de données dans le fichier .env en suivant le modèle fourni dans .env.example.
+   Placez le fichier .env à la racine de votre projet.
+
+4. Initialisation de la Base de Données
    Exécutez les étapes suivantes pour configurer et initialiser votre base de données :
 
 Exécutez les migrations Prisma pour créer la structure de votre base de données :
