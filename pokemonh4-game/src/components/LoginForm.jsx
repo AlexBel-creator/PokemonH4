@@ -28,7 +28,7 @@ const LoginForm = ({ setUserInfo }) => {
       }
 
       // Rediriger vers la page de test
-      navigate('/test');
+      navigate('/main-menu');
     } catch (err) {
       console.error('Erreur lors de la connexion:', err);
       setError('Login failed');

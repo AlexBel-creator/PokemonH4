@@ -6,8 +6,8 @@ import PlayerTeam from './PlayerTeam';
 const TeamManagement = () => {
   const [teamPokemons, setTeamPokemons] = useState([]);
   const [error, setError] = useState(''); // État pour gérer les messages d'erreur
+  const [updateTrigger, setUpdateTrigger] = useState(false); // État pour déclencher la mise à jour
 
-  // Fonction pour récupérer les Pokémon de l'équipe
   const fetchTeamPokemons = async () => {
     try {
       const uuid = localStorage.getItem('uuid'); // Récupérer l'UUID du localStorage
@@ -16,12 +16,9 @@ const TeamManagement = () => {
         throw new Error("UUID de l'utilisateur non trouvé");
       }
 
-      const response = await axios.get(
-        `http://localhost:5001/api/teams/team`, // URL correcte pour la route
-        {
-          params: { uuid }, // Envoyer UUID comme paramètre de la requête
-        },
-      );
+      const response = await axios.get(`http://localhost:5001/api/teams/team`, {
+        params: { uuid },
+      });
 
       setTeamPokemons(response.data.pokemons || []);
     } catch (error) {
@@ -35,11 +32,11 @@ const TeamManagement = () => {
 
   useEffect(() => {
     fetchTeamPokemons();
-  }, []);
+  }, [updateTrigger]); // Ajoutez updateTrigger comme dépendance
 
   const handleAddToTeam = async (pokemonId) => {
     try {
-      const uuid = localStorage.getItem('uuid'); // Récupérer l'UUID du localStorage
+      const uuid = localStorage.getItem('uuid');
 
       if (!uuid) {
         throw new Error("UUID de l'utilisateur non trouvé");
@@ -53,15 +50,14 @@ const TeamManagement = () => {
         },
       );
 
-      // Recharger les Pokémon de l'équipe sans recharger la page
-      fetchTeamPokemons();
+      setUpdateTrigger(!updateTrigger); // Changer l'état pour déclencher une mise à jour
       setError(''); // Réinitialiser le message d'erreur en cas de succès
     } catch (error) {
       console.error("Erreur lors de l'ajout du Pokémon à l'équipe:", error);
       setError(
         error.response?.data?.error ||
           "Erreur lors de l'ajout du Pokémon à l'équipe.",
-      ); // Afficher l'erreur du backend si disponible
+      );
     }
   };
 
@@ -75,10 +71,9 @@ const TeamManagement = () => {
           <AvailablePokemons onAddToTeam={handleAddToTeam} />
         </div>
         <div className="w-1/3 ml-8">
-          <PlayerTeam pokemons={teamPokemons} />
+          <PlayerTeam pokemons={teamPokemons} updateTrigger={updateTrigger} />
         </div>
       </div>
-      {/* Afficher le message d'erreur s'il y en a un */}
       {error && (
         <div className="error-message text-red-500 text-center mt-4">
           {error}
